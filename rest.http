@@ -12,8 +12,10 @@ Content-Type: application/json
 
 {
   "ownerId": 1,
-  "name": "event es oksa",
+  "name": "event es okssa",
   "description": "This sxis a new event created via API.",
   "date": "2023-10-01T10:00:00Z",
   "location": "Nscsew Yossxsxrk"
 }
+
+GET  http://localhost:8088/api/v1/events

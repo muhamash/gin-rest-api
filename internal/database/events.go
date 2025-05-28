@@ -49,7 +49,7 @@ func (m *EventModel) GetAll() ([]*Event, error) {
 	events := []*Event{}
 	for rows.Next() {
 		var event Event
-		if err := rows.Scan(&event.Id, &event.Name, &event.Description, &event.Date, &event.Location, &event.OwnerId); err != nil {
+		if err := rows.Scan(&event.Id, &event.Name, &event.OwnerId, &event.Description, &event.Date, &event.Location); err != nil {
 			return nil, err
 		}
 		events = append(events, &event)

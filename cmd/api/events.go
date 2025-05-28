@@ -13,27 +13,39 @@ func (app *application) createEvent(c *gin.Context) {
 	var event database.Event
 
 	if err := c.ShouldBindJSON(&event); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(),  "status":"error"})
 		return
 	}
 
 	err := app.models.Events.Insert(&event)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create event", "detail": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create event", "detail": err.Error(), "status":"error"})
 		return
 	} 
-	c.JSON(http.StatusCreated, event)
+	c.JSON(http.StatusOK, gin.H{
+		"status":       "ok",
+		"createdEvent":       event,
+	})
 }
 
 // get all event
+// get all events
 func (app *application) getAllEvent(c *gin.Context) {
 	events, err := app.models.Events.GetAll()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve events"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": "error",
+			"error":  "Failed to retrieve events",
+			"detail": err.Error(),
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, events)
+	c.JSON(http.StatusOK, gin.H{
+		"status":       "ok",
+		"totalEvents":  len(events),
+		"events":       events,
+	})
 }
 
 // get single event by Id
@@ -55,7 +67,7 @@ func (app *application) getEvent(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, event)
+	c.JSON(http.StatusOK, gin.H{"event": event})
 }
 
 // update event by Id
