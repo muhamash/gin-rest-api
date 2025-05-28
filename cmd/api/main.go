@@ -7,6 +7,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/mattn/go-sqlite3"
 
+	"github.com/muhamash/go-first-rest-api/cmd/api/handlers"
 	"github.com/muhamash/go-first-rest-api/internal/database"
 	"github.com/muhamash/go-first-rest-api/internal/env"
 )
@@ -15,6 +16,7 @@ type application struct {
 	port int
 	models database.Models
 	jwtSecret string
+	auth *handlers.AuthHandler
 }
 
 func main() {
@@ -30,6 +32,7 @@ func main() {
 		port:      env.GetEnvInt("PORT", 8080),
 		models:    models,
 		jwtSecret: env.GetEnvString("JWT_SECRET", "muhamash_secret"),
+		auth:      &handlers.AuthHandler{Models: models},
 	}
 
 	if err := app.serve(); err != nil {

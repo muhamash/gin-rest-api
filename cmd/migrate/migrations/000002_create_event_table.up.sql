@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS events (
-    id SERIAL PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     owner_name VARCHAR(50) NOT NULL UNIQUE,
     owner_id INT NOT NULL, 
     description TEXT NOT NULL,
