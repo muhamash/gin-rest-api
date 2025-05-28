@@ -1,8 +1,19 @@
-POST http://localhost:8088/api/v1/auth/register
+# POST http://localhost:8088/api/v1/auth/register
+# Content-Type: application/json
+
+# {
+#   "name": "ash",
+#   "password": "ssesadcsursddfepasswaord123",
+#   "email": "ash@assaaddfdsdah.com"
+# }
+
+POST http://localhost:8088/api/v1/events
 Content-Type: application/json
 
 {
-  "name": "newsssadsasasaasdasdaduserdsadsfsd",
-  "password": "ssesadcsursddfepasswaord123",
-  "email": "asssasssadsdadadh@asaadssadsdfdsdah.com"
+  "ownerId": 1,
+  "name": "event es oksa",
+  "description": "This sxis a new event created via API.",
+  "date": "2023-10-01T10:00:00Z",
+  "location": "Nscsew Yossxsxrk"
 }

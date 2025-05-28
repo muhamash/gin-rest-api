@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    owner_name VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(50) NOT NULL UNIQUE,
     owner_id INT NOT NULL, 
     description TEXT NOT NULL,
     date DATE NOT NULL,
