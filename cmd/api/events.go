@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/muhamash/go-first-rest-api/internal/database"
@@ -73,37 +74,54 @@ func (app *application) getEvent(c *gin.Context) {
 
 // update event by Id
 func (app *application) updateEvent(c *gin.Context) {
-	Id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "InvalId event Id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid event ID"})
 		return
 	}
 
-	existingEvent, err := app.models.Events.GET(Id)
-	if existingEvent == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+	var event database.Event
+	if err := c.ShouldBindJSON(&event); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON", "detail": err.Error()})
+		return
+	}
+	event.Id = id
+
+	// Track what was updated
+	updatedFields := gin.H{}
+
+	if event.Name != nil {
+		updatedFields["name"] = *event.Name
+	}
+	if event.Description != nil {
+		updatedFields["description"] = *event.Description
+	}
+	if event.Date != nil {
+		updatedFields["date"] = event.Date.Format(time.RFC3339)
+	}
+	if event.Location != nil {
+		updatedFields["location"] = *event.Location
+	}
+	if event.OwnerId != nil {
+		updatedFields["ownerId"] = *event.OwnerId
+	}
+
+	if len(updatedFields) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No fields provided to update"})
 		return
 	}
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event"})
+	if err := app.models.Events.Update(&event); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update event", "detail": err.Error()})
 		return
 	}
 
-	updateEvent := &database.Event{}
-	if err := c.ShouldBindJSON(updateEvent); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	updateEvent.Id = Id
-	if err := app.models.Events.Update(updateEvent); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update event"})
-		return		
-	}
-
-	c.JSON(http.StatusOK, updateEvent)
+	c.JSON(http.StatusOK, gin.H{
+		"status":       "ok",
+		"updatedEvent": updatedFields,
+	})
 }
+
 
 // delete event by Id
 func (app *application) deleteEvent(c *gin.Context) {

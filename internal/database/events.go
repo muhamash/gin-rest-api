@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -14,11 +15,11 @@ type EventModel struct {
 
 type Event struct {
 	Id          int    `json:"id"`
-	Name   		string `json:"name" binding:"required,min=3,max=50"`
-	Description string `json:"description" binding:"required,min=3,max=200"`
-	Date        time.Time `json:"date"`
-	Location    string `json:"location" binding:"required,min=3,max=100"`
-	OwnerId     int    `json:"ownerId" binding:"required"`
+	Name   		*string `json:"name" min:"3" max:"50"`
+	Description *string `json:"description" min:"3" max:"200"`
+	Date        *time.Time `json:"date"`
+	Location    *string `json:"location" min:"3" max:"100"`
+	OwnerId     *int    `json:"ownerId"`
 }
 
 // craete a new event
@@ -97,14 +98,46 @@ func (m *EventModel) Update(event *Event) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
- 	query := `UPDATE events SET owner_name = $1, description = $2, date = $3, location = $4, owner_id = $5 WHERE id = $6`
+	setClauses := []string{}
+	args := []interface{}{}
+	argID := 1
 
-	_, err := m.DB.ExecContext(ctx, query, event.Name, event.Description, event.Date, event.Location, event.OwnerId, event.Id)
-	if err != nil {	
-		return err
+	if event.Name != nil {
+		setClauses = append(setClauses, fmt.Sprintf("name = $%d", argID))
+		args = append(args, *event.Name)
+		argID++
+	}
+	if event.Description != nil {
+		setClauses = append(setClauses, fmt.Sprintf("description = $%d", argID))
+		args = append(args, *event.Description)
+		argID++
+	}
+	if event.Date != nil {
+		setClauses = append(setClauses, fmt.Sprintf("date = $%d", argID))
+		args = append(args, *event.Date)
+		argID++
+	}
+	if event.Location != nil {
+		setClauses = append(setClauses, fmt.Sprintf("location = $%d", argID))
+		args = append(args, *event.Location)
+		argID++
+	}
+	if event.OwnerId != nil {
+		setClauses = append(setClauses, fmt.Sprintf("owner_id = $%d", argID))
+		args = append(args, *event.OwnerId)
+		argID++
 	}
 
-	return nil
+	if len(setClauses) == 0 {
+		return fmt.Errorf("no fields to update")
+	}
+
+	// Add final ID condition
+	query := fmt.Sprintf(`UPDATE events SET %s WHERE id = $%d`, strings.Join(setClauses, ", "), argID)
+	args = append(args, event.Id)
+
+	_, err := m.DB.ExecContext(ctx, query, args...)
+	return err
 }
 
 // delete event by Id
