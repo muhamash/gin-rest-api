@@ -36,5 +36,12 @@
 
 # GET http://localhost:8088/api/v1/auth/users
 
-POST http://localhost:8088/api/v1/events/10/attendees/3
+GET http://localhost:8088/api/v1/events/attendees/5
+
+GET http://localhost:8088/api/v1/attendees/events/3
+
+# DELETE   http://localhost:8088/api/v1/events/attendees/5/3
+
+POST http://localhost:8088/api/v1/events/5/attendees/3
 Content-Type: application/json
+
