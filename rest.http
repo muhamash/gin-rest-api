@@ -33,3 +33,8 @@
 # }
 
 # DELETE  http://localhost:8088/api/v1/events/3
+
+# GET http://localhost:8088/api/v1/auth/users
+
+POST http://localhost:8088/api/v1/events/2/attendees/5
+Content-Type: application/json
