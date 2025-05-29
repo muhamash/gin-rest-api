@@ -17,6 +17,7 @@ type application struct {
 	models database.Models
 	jwtSecret string
 	auth *handlers.AuthHandler
+	event *handlers.EventHandler
 }
 
 func main() {
@@ -33,6 +34,7 @@ func main() {
 		models:    models,
 		jwtSecret: env.GetEnvString("JWT_SECRET", "muhamash_secret"),
 		auth:      &handlers.AuthHandler{Models: models},
+		event: 	   &handlers.EventHandler{Models: models},
 	}
 
 	if err := app.serve(); err != nil {
