@@ -12,22 +12,24 @@
 
 # {
 #   "ownerId": 3,
-#   "name": "event s okssa",
+#   "name": "new s okssa",
 #   "description": "This sxis a new event created via API.",
 #   "date": "2023-10-01T10:00:00Z",
-#   "location": "Nscsew Yossxsxrk"
+#   "location": "Nw Yossxsxrk"
 # }
 
-GET  http://localhost:8088/api/v1/events
+# GET  http://localhost:8088/api/v1/events
 
 # GET http://localhost:8088/api/v1/events/1
 
-PUT http://localhost:8088/api/v1/events/1
-Content-Type: application/json
+# PUT http://localhost:8088/api/v1/events/1
+# Content-Type: application/json
 
-{
-    "name": " cahnged",
-    "description": "This a new event created via API.",
-    "date": "2023-10-01T10:00:00Z",
-    "ownerId": 3
-}
+# {
+#     "name": " cahnged",
+#     "description": "This a new event created via API.",
+#     "date": "2023-10-01T10:00:00Z",
+#     "ownerId": 3
+# }
+
+# DELETE  http://localhost:8088/api/v1/events/2

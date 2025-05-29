@@ -125,13 +125,13 @@ func (app *application) updateEvent(c *gin.Context) {
 
 // delete event by Id
 func (app *application) deleteEvent(c *gin.Context) {
-	Id, err := strconv.Atoi(c.Param("Id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "InvalId event Id"})
 		return
 	}
 
-	existingEvent, err := app.models.Events.GET(Id)
+	existingEvent, err := app.models.Events.GET(id)
 	if existingEvent == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
 		return
@@ -142,10 +142,23 @@ func (app *application) deleteEvent(c *gin.Context) {
 		return
 	}
 
-	if err := app.models.Events.Delete(Id); err != nil {
+	if err := app.models.Events.Delete(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete event"})
 		return
 	}
 
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"message": fmt.Sprintf("Event with ID %d deleted successfully", id),
+		"deletedEvent": gin.H{
+			"id":          existingEvent.Id,
+			"name":        existingEvent.Name,
+			"description": existingEvent.Description,
+			"date":        existingEvent.Date.Format(time.RFC3339),
+			"location":    existingEvent.Location,
+			"ownerId":     existingEvent.OwnerId,
+		},
+		"deletedAt": time.Now().Format(time.RFC3339),
+		// "deletedBy": c.GetString("userID"), 
+	})
 }
