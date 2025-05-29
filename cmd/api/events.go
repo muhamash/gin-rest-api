@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -28,7 +29,6 @@ func (app *application) createEvent(c *gin.Context) {
 	})
 }
 
-// get all event
 // get all events
 func (app *application) getAllEvent(c *gin.Context) {
 	events, err := app.models.Events.GetAll()
@@ -50,13 +50,14 @@ func (app *application) getAllEvent(c *gin.Context) {
 
 // get single event by Id
 func (app *application) getEvent(c *gin.Context) {
-	Id, err := strconv.Atoi(c.Param("Id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "InvalId event Id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "InvalId event Id", "detail": err.Error()})
 		return
 	}
 	 
-	event, err := app.models.Events.GET(Id)
+	event, err := app.models.Events.GET(id)
+	fmt.Println("Event is:", event, id)
 	if event == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
 		return
@@ -67,12 +68,12 @@ func (app *application) getEvent(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"event": event})
+	c.JSON(http.StatusOK, gin.H{"status":"ok","event": event})
 }
 
 // update event by Id
 func (app *application) updateEvent(c *gin.Context) {
-	Id, err := strconv.Atoi(c.Param("Id"))
+	Id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "InvalId event Id"})
 		return

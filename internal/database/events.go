@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -15,7 +16,7 @@ type Event struct {
 	Id          int    `json:"id"`
 	Name   		string `json:"name" binding:"required,min=3,max=50"`
 	Description string `json:"description" binding:"required,min=3,max=200"`
-	Date        string `json:"date"`
+	Date        time.Time `json:"date"`
 	Location    string `json:"location" binding:"required,min=3,max=100"`
 	OwnerId     int    `json:"ownerId" binding:"required"`
 }
@@ -70,7 +71,16 @@ func (m *EventModel) GET(Id int) (*Event, error) {
 	query := `SELECT * FROM events WHERE id = $1`
 	
 	var event Event
-	err := m.DB.QueryRowContext(ctx, query, Id).Scan(&event.Id, &event.Name, &event.Description, &event.Date, &event.Location, &event.OwnerId)
+	err := m.DB.QueryRowContext(ctx, query, Id).Scan(
+		&event.Id,
+		&event.Name,
+		&event.OwnerId,
+		&event.Description,
+		&event.Date,
+		&event.Location,
+	)
+	
+	fmt.Println("Query is:", query, "Id is:", Id, err, event)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
