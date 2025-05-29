@@ -69,3 +69,26 @@ func (h *AuthHandler) RegisterUser(c *gin.Context) {
 	})
 	
 }	
+
+// get all users
+func (h *AuthHandler) GetAllUsers(c *gin.Context){
+	users, err := h.Models.Users.GetAllUser()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": "error",
+			"error":  "Failed to retrieve users",
+			"detail": err.Error(),
+		})
+		return
+	}
+
+	fmt.Print(users)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":       "ok",
+		"totalUsers":  len(users),
+		"users":       users,
+	})
+
+}

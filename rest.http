@@ -20,7 +20,7 @@
 
 # GET  http://localhost:8088/api/v1/events
 
-# GET http://localhost:8088/api/v1/events/1
+# GET http://localhost:8088/api/v1/events/6
 
 # PUT http://localhost:8088/api/v1/events/1
 # Content-Type: application/json
@@ -36,5 +36,5 @@
 
 # GET http://localhost:8088/api/v1/auth/users
 
-POST http://localhost:8088/api/v1/events/2/attendees/5
+POST http://localhost:8088/api/v1/events/10/attendees/3
 Content-Type: application/json
