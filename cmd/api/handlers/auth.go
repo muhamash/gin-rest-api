@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/muhamash/go-first-rest-api/internal/database"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -18,6 +20,56 @@ type registerRequest struct {
 
 type AuthHandler struct {
 	Models database.Models
+	jwtSecret string
+}
+
+type loginRequest struct {
+	Password string `json:"password" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+}
+
+type loginResponse struct{
+	Token string `json: "token"`
+}
+
+// login
+func (h *AuthHandler) LoginUser(c *gin.Context){
+	var auth loginRequest
+
+	if err := c.ShouldBindJSON(&auth); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}	
+
+	existingUser, err := h.Models.Users.GetByEmail(auth.Email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}	
+	if existingUser == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "email not valid", "details": err.Error()})
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(auth.Password))
+	if existingUser == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "login error", "details": err.Error()})
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": existingUser.ID,
+		"email":   existingUser.Email,
+		"exp": time.Now().Add(time.Hour * 72).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(h.jwtSecret))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return   
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": loginResponse{Token: tokenString},
+		"userId": existingUser.ID,
+		"userName": existingUser.Username,
+	})
 }
 
 // registerHandler handles user registration requests.

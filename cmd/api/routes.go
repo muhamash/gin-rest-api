@@ -26,6 +26,7 @@ func (app *application) routes() http.Handler {
 
 		v1.POST("/auth/register", app.auth.RegisterUser)
 		v1.GET("/auth/users", app.auth.GetAllUsers)
+		v1.POST("/auth/login", app.auth.LoginUser)
 	}
 
 	return g

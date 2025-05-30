@@ -1,0 +1,6 @@
+/tmp
+/bin
+*.db
+.git
+.gitignore
+.env
