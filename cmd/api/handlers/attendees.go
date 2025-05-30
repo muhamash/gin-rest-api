@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/muhamash/go-first-rest-api/cmd/api/utils"
 	"github.com/muhamash/go-first-rest-api/internal/database"
 )
 
@@ -49,8 +50,9 @@ func (h *AttendeeHandler) RegisterAttendeeToEvent(c *gin.Context)  {
 	}
 
 	// user := h.GetUserFromContext(c)
+	contextUser := utils.RetrieveUserFromContext(c)
 
-	if event.OwnerId != nil && *event.OwnerId == userId {
+	if event.OwnerId != nil && *event.OwnerId == contextUser.ID {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "You cannot register yourself as an attendee for your own event"})
 		return
 	}	

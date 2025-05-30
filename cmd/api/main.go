@@ -8,6 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/muhamash/go-first-rest-api/cmd/api/handlers"
+	"github.com/muhamash/go-first-rest-api/cmd/api/middleware"
 	"github.com/muhamash/go-first-rest-api/internal/database"
 	"github.com/muhamash/go-first-rest-api/internal/env"
 )
@@ -19,6 +20,8 @@ type application struct {
 	auth *handlers.AuthHandler
 	event *handlers.EventHandler
 	attendee *handlers.AttendeeHandler
+	authMiddleware *middleware.AuthMiddleware
+	// utils *utils.RetrieveUserFromContext
 }
 
 func main() {
@@ -37,6 +40,9 @@ func main() {
 		auth:      &handlers.AuthHandler{Models: models},
 		event: 	   &handlers.EventHandler{Models: models},
 		attendee:  &handlers.AttendeeHandler{Models: models},
+		authMiddleware:  &middleware.AuthMiddleware{Models: models},
+
+		// utils : &ut
 	}
 
 	if err := app.serve(); err != nil {
