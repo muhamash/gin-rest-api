@@ -90,6 +90,13 @@ func (h *AttendeeHandler) GetAttendeesForEvent(c *gin.Context) {
 		return
 	}
 
+	event, err := h.Models.Events.GET(eventId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve event", "detail": err.Error()})
+		return
+	}
+
+
 	attendees, err := h.Models.Attendees.GetAttendeesByEvent(eventId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve attendees", "detail": err.Error()})
@@ -100,6 +107,9 @@ func (h *AttendeeHandler) GetAttendeesForEvent(c *gin.Context) {
 		"status":     "ok",
 		"totalAttendees": len(attendees),
 		"attendees":  attendees,
+		"eventId": eventId,
+		"eventName": event.Name,
+		"eventLocation": event.Location,
 	})
 }
 
