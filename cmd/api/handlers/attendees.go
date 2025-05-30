@@ -96,6 +96,11 @@ func (h *AttendeeHandler) GetAttendeesForEvent(c *gin.Context) {
 		return
 	}
 
+	if event == nil {
+		c.JSON(http.StatusNotFound, gin.H{"Message": "Not found ant event",})
+		return
+	}
+
 
 	attendees, err := h.Models.Attendees.GetAttendeesByEvent(eventId)
 	if err != nil {
@@ -110,6 +115,7 @@ func (h *AttendeeHandler) GetAttendeesForEvent(c *gin.Context) {
 		"eventId": eventId,
 		"eventName": event.Name,
 		"eventLocation": event.Location,
+		"ownerId": event.OwnerId,
 	})
 }
 
