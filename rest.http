@@ -2,17 +2,18 @@
 # Content-Type: application/json
 
 # {
-#   "name": "test user",
+#   "name": "ash user",
 #   "password": "12345678",
-#   "email": "ash@user.com"
+#   "email": "ash@user.ash"
 # }
 
 # POST http://localhost:8088/api/v1/auth/login
 # Content-Type: application/json
 
 # {
+#   "name": "ash user",
 #   "password": "12345678",
-#   "email": "ash@test.com"
+#   "email": "ash@user.ash"
 # }
 
 # POST http://localhost:8088/api/v1/auth/refresh
@@ -35,22 +36,21 @@
 
 # GET  http://localhost:8088/api/v1/events
 
-# GET http://localhost:8088/api/v1/events/6
+# GET http://localhost:8088/api/v1/events/8
 
-PUT http://localhost:8088/api/v1/events/1
+PUT http://localhost:8088/api/v1/events/8
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QiLCJleHAiOjE3NDg3MjgwNDksInVzZXJfaWQiOjR9.oq3yrZae2Erkvb22zO939vRqQRUbFmmIUKwWJHGYIwQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzaCB1c2VyIiwiZXhwIjoxNzQ4NzI5Mjk2LCJ1c2VyX2lkIjo2fQ.CQKQfONo5V-rpJbthsgwC8G9YgV23nVx1EqMcVcPdIQ
 
 {
-    "name": " cahnsccxscged",
+    "name": " change",
     "description": "This a new event created via API.",
-    "date": "2023-10-01T10:00:00Z",
-    "ownerId": 3
+    "date": "2023-10-01T10:00:00Z"
 }
 
 # DELETE  http://localhost:8088/api/v1/events/3
 
-# GET http://localhost:8088/api/v1/auth/users
+GET http://localhost:8088/api/v1/auth/users
 
 # GET http://localhost:8088/api/v1/events/attendees/4
 

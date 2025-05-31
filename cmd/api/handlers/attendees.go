@@ -60,7 +60,6 @@ func (h *AttendeeHandler) RegisterAttendeeToEvent(c *gin.Context)  {
 		return
 	}
 
-	// user := h.GetUserFromContext(c)
 	contextUser := utils.RetrieveUserFromContext(c)
 
 	if event.OwnerId != nil && *event.OwnerId == contextUser.ID {

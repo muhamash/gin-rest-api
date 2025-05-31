@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/muhamash/go-first-rest-api/cmd/api/utils"
 	"github.com/muhamash/go-first-rest-api/internal/database"
 )
 
@@ -134,30 +135,47 @@ func (h *EventHandler) UpdateEvent(c *gin.Context) {
 		return
 	}
 
-	var event database.Event
-	if err := c.ShouldBindJSON(&event); err != nil {
+	// Fetch the existing event from DB
+	existingEvent, err := h.Models.Events.GET(id)
+	if err != nil || existingEvent == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
+		return
+	}
+
+	// Get current user from context
+	contextUser := utils.RetrieveUserFromContext(c)
+
+	// Check if the requester is the owner
+	if existingEvent.OwnerId == nil || *existingEvent.OwnerId != contextUser.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not the owner of the event"})
+		return
+	}
+
+	var updateData database.Event
+	if err := c.ShouldBindJSON(&updateData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON", "detail": err.Error()})
 		return
 	}
-	event.Id = id
 
-	// Track what was updated
+	// Track and apply changes
 	updatedFields := gin.H{}
+	updateData.Id = id
 
-	if event.Name != nil {
-		updatedFields["name"] = *event.Name
+	if updateData.Name != nil {
+		existingEvent.Name = updateData.Name
+		updatedFields["name"] = *updateData.Name
 	}
-	if event.Description != nil {
-		updatedFields["description"] = *event.Description
+	if updateData.Description != nil {
+		existingEvent.Description = updateData.Description
+		updatedFields["description"] = *updateData.Description
 	}
-	if event.Date != nil {
-		updatedFields["date"] = event.Date.Format(time.RFC3339)
+	if updateData.Date != nil {
+		existingEvent.Date = updateData.Date
+		updatedFields["date"] = updateData.Date.Format(time.RFC3339)
 	}
-	if event.Location != nil {
-		updatedFields["location"] = *event.Location
-	}
-	if event.OwnerId != nil {
-		updatedFields["ownerId"] = *event.OwnerId
+	if updateData.Location != nil {
+		existingEvent.Location = updateData.Location
+		updatedFields["location"] = *updateData.Location
 	}
 
 	if len(updatedFields) == 0 {
@@ -165,7 +183,7 @@ func (h *EventHandler) UpdateEvent(c *gin.Context) {
 		return
 	}
 
-	if err := h.Models.Events.Update(&event); err != nil {
+	if err := h.Models.Events.Update(existingEvent); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update event", "detail": err.Error()})
 		return
 	}
@@ -175,6 +193,7 @@ func (h *EventHandler) UpdateEvent(c *gin.Context) {
 		"updatedEvent": updatedFields,
 	})
 }
+
 
 
 // delete event by Id
