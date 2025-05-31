@@ -3,12 +3,23 @@ package main
 import (
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func (app *application) routes() http.Handler {
 
 	g := gin.Default()
+	g.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:8088", "http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+	
 
 	// Define the versions of the routes for the application
 	v1 := g.Group("/api/v1")
@@ -33,7 +44,18 @@ func (app *application) routes() http.Handler {
 		authGroup.GET("/events/attendees/:eventId", app.attendee.GetAttendeesForEvent)
 		authGroup.GET("/attendees/events/:userId", app.attendee.GetEventsByAttendee)
 		authGroup.DELETE("/events/attendees/:eventId/:userId", app.attendee.DeleteAttendeeFromEvent)
+
+		v1.POST("/auth/refresh", app.auth.RefreshToken)
+
 	}
+
+	g.GET("/swagger/*any", func(c *gin.Context) {
+		if c.Request.RequestURI == "/swagger/" {
+			c.Redirect(302, "/swagger/index.html")
+			return
+		}
+		ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("http://localhost:8080/swagger/doc.json"))(c)
+	})
 
 	return g
 }

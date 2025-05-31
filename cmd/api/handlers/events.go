@@ -15,6 +15,19 @@ type EventHandler struct {
 }
 
 // create event
+
+// CreateEvent creates a new event
+//
+//	@Summary		Creates a new event
+//	@Description	Creates a new event
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Param			event	body		database.Event	true	"Event"
+//	@Success		201		{object}	database.Event
+//	@Router			/api/v1/events [post]
+//	@Security		BearerAuth
+
 func (h *EventHandler) CreateEvent(c *gin.Context) {
 	var event database.Event
 
@@ -35,6 +48,17 @@ func (h *EventHandler) CreateEvent(c *gin.Context) {
 }
 
 // get all events
+
+// GetEvents returns all events
+//
+//	@Summary		Returns all events
+//	@Description	Returns all events
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Success		200		{object}	[]database.Event
+//	@Router			/api/v1/events [get]
+
 func (h *EventHandler) GetAllEvent(c *gin.Context) {
 	events, err := h.Models.Events.GetAll()
 	if err != nil {
@@ -54,6 +78,18 @@ func (h *EventHandler) GetAllEvent(c *gin.Context) {
 }
 
 // get single event by Id
+
+// GetEvent returns a single event
+//
+//	@Summary		Returns a single event
+//	@Description	Returns a single event
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Event ID"
+//	@Success		200	{object}	database.Event
+//	@Router			/api/v1/events/{id} [get]
+
 func (h *EventHandler) GetEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -77,6 +113,20 @@ func (h *EventHandler) GetEvent(c *gin.Context) {
 }
 
 // update event by Id
+
+// UpdateEvent updates an existing event
+//
+//	@Summary		Updates an existing event
+//	@Description	Updates an existing event
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Event ID"
+//	@Param			event	body		database.Event	true	"Event"
+//	@Success		200	{object}	database.Event
+//	@Router			/api/v1/events/{id} [put]
+//	@Security		BearerAuth
+
 func (h *EventHandler) UpdateEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -128,6 +178,19 @@ func (h *EventHandler) UpdateEvent(c *gin.Context) {
 
 
 // delete event by Id
+
+// DeleteEvent deletes an existing event
+//
+//	@Summary		Deletes an existing event
+//	@Description	Deletes an existing event
+//	@Tags			events
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Event ID"
+//	@Success		204
+//	@Router			/api/v1/events/{id} [delete]
+//	@Security		BearerAuth
+
 func (h *EventHandler) DeleteEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

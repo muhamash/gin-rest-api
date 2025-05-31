@@ -50,23 +50,31 @@ func (a *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 			return
 		}
 
-		email, ok := claims["email"].(string)
+		userIDFloat, ok := claims["user_id"].(float64)
 		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Email claim is missing or invalid"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID claim is missing or invalid"})
+			c.Abort()
+			return
+		}
+		userID := int(userIDFloat)
+
+		user, err := a.Models.Users.Get(userID)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error":   "User not found in database",
+				"details": err.Error(),
+			})
 			c.Abort()
 			return
 		}
 
-		user, err := a.Models.Users.GetByEmail(email)
-		if err != nil || user == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		if user == nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found; Nil user", "id": userID})
 			c.Abort()
 			return
 		}
 
-		// Store the authenticated user in context
 		c.Set("user", user)
-
 		c.Next()
 	}
 }

@@ -13,6 +13,17 @@ type AttendeeHandler struct {
 	Models database.Models
 }
 
+// AddAttendeeToEvent adds an attendee to an event
+// @Summary		Adds an attendee to an event
+// @Description	Adds an attendee to an event
+// @Tags			attendees
+// @Accept			json
+// @Produce		json
+// @Param			id	path		int	true	"Event ID"
+// @Param			userId	path		int	true	"User ID"
+// @Success		201		{object}	database.Attendee
+// @Router			/api/v1/events/{id}/attendees/{userId} [post]
+// @Security		BearerAuth
 
 func (h *AttendeeHandler) RegisterAttendeeToEvent(c *gin.Context)  {
 	eventId, err := strconv.Atoi(c.Param("eventId"))
@@ -85,6 +96,17 @@ func (h *AttendeeHandler) RegisterAttendeeToEvent(c *gin.Context)  {
 
 }
 
+// GetAttendeesForEvent returns all attendees for a given event
+//
+//	@Summary		Returns all attendees for a given event
+//	@Description	Returns all attendees for a given event
+//	@Tags			attendees
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Event ID"
+//	@Success		200	{object}	[]database.User
+//	@Router			/api/v1/events/{id}/attendees [get]
+
 func (h *AttendeeHandler) GetAttendeesForEvent(c *gin.Context) {
 	eventId, err := strconv.Atoi(c.Param("eventId"))
 	if err != nil {
@@ -121,6 +143,16 @@ func (h *AttendeeHandler) GetAttendeesForEvent(c *gin.Context) {
 	})
 }
 
+// GetEventsByAttendee returns all events for a given attendee
+//
+//	@Summary		Returns all events for a given attendee
+//	@Description	Returns all events for a given attendee
+//	@Tags			attendees
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Attendee ID"
+//	@Success		200	{object}	[]database.Event
+//	@Router			/api/v1/attendees/{id}/events [get]
 
 func (h *AttendeeHandler) GetEventsByAttendee(c *gin.Context) {
 	user, err := strconv.Atoi(c.Param("userId"))
@@ -146,6 +178,18 @@ func (h *AttendeeHandler) GetEventsByAttendee(c *gin.Context) {
 		"event": attendee,
 	})
 }
+
+// DeleteAttendeeFromEvent deletes an attendee from an event
+// @Summary		Deletes an attendee from an event
+// @Description	Deletes an attendee from an event
+// @Tags			attendees
+// @Accept			json
+// @Produce		json
+// @Param			id	path		int	true	"Event ID"
+// @Param			userId	path		int	true	"User ID"
+// @Success		204
+// @Router			/api/v1/events/{id}/attendees/{userId} [delete]
+// @Security		BearerAuth
 
 func (h *AttendeeHandler) DeleteAttendeeFromEvent(c *gin.Context) {
 	userId, err := strconv.Atoi(c.Param("userId"))

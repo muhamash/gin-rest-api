@@ -1,0 +1,34 @@
+definitions:
+  gin.H:
+    additionalProperties: {}
+    type: object
+info:
+  contact: {}
+  description: A rest API in Go using Gin framework.
+  title: Go Gin Rest API
+  version: "1.0"
+paths:
+  /api/v1/auth/users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Get all users
+      tags:
+      - test
+security:
+- BearerAuth: []
+securityDefinitions:
+  BearerAuth:
+    description: Enter your bearer token in the format **Bearer &lt;token&gt;**
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
