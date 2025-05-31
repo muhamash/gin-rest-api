@@ -19,7 +19,7 @@
 # Content-Type: application/json
 
 # {
-#   "refresh_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QiLCJleHAiOjE3NDkzMjkzODQsInVzZXJfaWQiOjR9.stRLHo8laqLPHozPo3v-AbYooOEmREwVRmbRlwl9E3M"
+#   "refresh_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QiLCJleHAiOjE3NDkzMzE4OTgsInVzZXJfaWQiOjR9.9XL7N-EoQhqnJz9W8ysQd9InR-QCMWzauy4zTbRi9pM"
 # }
 
 # POST http://localhost:8088/api/v1/events
@@ -39,10 +39,10 @@
 
 PUT http://localhost:8088/api/v1/events/1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QiLCJleHAiOjE3NDg3MjU0ODQsInVzZXJfaWQiOjR9.iXhkQtAKQrLzZs-6IsMOby-msuUps4C6FMWhW-XzXjo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QiLCJleHAiOjE3NDg3MjgwNDksInVzZXJfaWQiOjR9.oq3yrZae2Erkvb22zO939vRqQRUbFmmIUKwWJHGYIwQ
 
 {
-    "name": " cahnscscged",
+    "name": " cahnsccxscged",
     "description": "This a new event created via API.",
     "date": "2023-10-01T10:00:00Z",
     "ownerId": 3
