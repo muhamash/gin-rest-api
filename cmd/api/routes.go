@@ -45,7 +45,8 @@ func (app *application) routes() http.Handler {
 		authGroup.GET("/attendees/events/:userId", app.attendee.GetEventsByAttendee)
 		authGroup.DELETE("/events/attendees/:eventId/:userId", app.attendee.DeleteAttendeeFromEvent)
 
-		v1.POST("/auth/refresh", app.auth.RefreshToken)
+		authGroup.POST("/auth/refresh", app.auth.RefreshToken)
+		authGroup.POST("/logout/:id", app.auth.LogoutUser)
 
 	}
 

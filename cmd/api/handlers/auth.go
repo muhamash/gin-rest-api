@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -92,8 +93,17 @@ func (h *AuthHandler) LoginUser(c *gin.Context) {
 		return
 	}
 
-	key := fmt.Sprintf("refresh_token:user:%d", existingUser.ID)
-	err = h.Redis.Set(redisclient.Ctx, key, refreshString, 7*24*time.Hour).Err()
+	// Invalidate previous tokens by overwriting in Redis
+	accessKey := fmt.Sprintf("access_token:user:%d", existingUser.ID)
+	refreshKey := fmt.Sprintf("refresh_token:user:%d", existingUser.ID)
+
+	// Save new tokens
+	err = h.Redis.Set(redisclient.Ctx, accessKey, accessString, 15*time.Minute).Err()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store access token"})
+		return
+	}
+	err = h.Redis.Set(redisclient.Ctx, refreshKey, refreshString, 7*24*time.Hour).Err()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store refresh token"})
 		return
@@ -193,35 +203,76 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	}
 
 	userId := int64(claims["user_id"].(float64))
-	key := fmt.Sprintf("refresh_token:user:%d", userId)
+	email := claims["email"].(string)
+	accessKey := fmt.Sprintf("access_token:user:%d", userId)
+	refreshKey := fmt.Sprintf("refresh_token:user:%d", userId)
 
-	storedToken, err := h.Redis.Get(redisclient.Ctx, key).Result()
+	// Check stored refresh token
+	storedToken, err := h.Redis.Get(redisclient.Ctx, refreshKey).Result()
 	if err != nil || storedToken != req.RefreshToken {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token mismatch"})
 		return
 	}
 
-	// Issue new access token
-	newToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	// Create new access token
+	newAccessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userId,
-		"email":   claims["email"],
+		"email":   email,
 		"exp":     time.Now().Add(15 * time.Minute).Unix(),
 	})
-
-	newTokenString, err := newToken.SignedString([]byte(h.jwtSecret))
+	newAccessString, err := newAccessToken.SignedString([]byte(h.jwtSecret))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate access token"})
 		return
 	}
 
-	// save or update the refresh token
-	err = h.Redis.Set(redisclient.Ctx, key, newTokenString, 7*24*time.Hour).Err()
+	// Create new refresh token
+	newRefreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": userId,
+		"email":   email,
+		"exp":     time.Now().Add(7 * 24 * time.Hour).Unix(),
+	})
+	newRefreshString, err := newRefreshToken.SignedString([]byte(h.jwtSecret))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to updating refresh token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate refresh token"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": newTokenString})
+	// Store the new tokens
+	err = h.Redis.Set(redisclient.Ctx, accessKey, newAccessString, 15*time.Minute).Err()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store access token"})
+		return
+	}
+	err = h.Redis.Set(redisclient.Ctx, refreshKey, newRefreshString, 7*24*time.Hour).Err()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store refresh token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"access_token":         newAccessString,
+		"refresh_token": newRefreshString,
+	})
+}
+
+// logout
+func (h *AuthHandler) LogoutUser(c *gin.Context) {
+	userID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	key := fmt.Sprintf("refresh_token:user:%d", userID)
+
+	// Delete refresh token from Redis
+	if err := h.Redis.Del(redisclient.Ctx, key).Err(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to logout"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }
 
 

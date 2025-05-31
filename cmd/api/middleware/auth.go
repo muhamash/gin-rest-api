@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/muhamash/go-first-rest-api/internal/database"
 )
@@ -12,6 +13,7 @@ import (
 type AuthMiddleware struct {
 	Models    database.Models
 	JwtSecret string
+	Redis     *redis.Client
 }
 
 func (a *AuthMiddleware) RequireAuth() gin.HandlerFunc {
