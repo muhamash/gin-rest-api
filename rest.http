@@ -62,6 +62,6 @@
 # POST http://localhost:8088/api/v1/events/6/attendees/3
 # Content-Type: application/json
 
-POST http://localhost:8088/api/v1/logout/6
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzaCB1c2VyIiwiZXhwIjoxNzQ4NzI5Mjk2LCJ1c2VyX2lkIjo2fQ.CQKQfONo5V-rpJbthsgwC8G9YgV23nVx1EqMcVcPdIQ
+# POST http://localhost:8088/api/v1/logout/6
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzaCB1c2VyIiwiZXhwIjoxNzQ4NzI5Mjk2LCJ1c2VyX2lkIjo2fQ.CQKQfONo5V-rpJbthsgwC8G9YgV23nVx1EqMcVcPdIQ
